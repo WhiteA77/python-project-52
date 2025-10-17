@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}
+  {% if view.object %}
+    Изменение статуса
+  {% else %}
+    Создание статуса
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-5">
+      <h1 class="h3 mb-4 text-center">
+        {% if view.object %}
+          Изменение статуса
+        {% else %}
+          Новый статус
+        {% endif %}
+      </h1>
+      <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <div class="d-grid">
+          <button class="btn btn-primary" type="submit">
+            {% if view.object %}Сохранить{% else %}Создать{% endif %}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
