@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Удаление задачи{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h1 class="h4 mb-3 text-center">Удаление задачи</h1>
+          <p class="mb-4 text-center">
+            Вы уверены, что хотите удалить задачу <strong>{{ object.name }}</strong>?
+          </p>
+          <form method="post" class="d-flex justify-content-center gap-3">
+            {% csrf_token %}
+            <a class="btn btn-outline-secondary" href="{% url 'tasks:list' %}">Отмена</a>
+            <button class="btn btn-danger" type="submit">Удалить</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

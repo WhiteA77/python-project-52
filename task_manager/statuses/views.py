@@ -50,10 +50,12 @@ class StatusDeleteView(LoginRequiredMixin, DeleteView):
     protected_message = "Нельзя удалить статус, потому что он используется."
 
     def form_valid(self, form):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
         try:
-            response = super().form_valid(form)
+            self.object.delete()
         except ProtectedError:
             messages.error(self.request, self.protected_message)
-            return HttpResponseRedirect(self.get_success_url())
+            return HttpResponseRedirect(success_url)
         messages.success(self.request, self.success_message)
-        return response
+        return HttpResponseRedirect(success_url)

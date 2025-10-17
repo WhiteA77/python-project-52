@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}{{ task.name }}{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <h1 class="h3 mb-3">{{ task.name }}</h1>
+          <dl class="row">
+            <dt class="col-sm-3">Статус</dt>
+            <dd class="col-sm-9">{{ task.status.name }}</dd>
+
+            <dt class="col-sm-3">Автор</dt>
+            <dd class="col-sm-9">
+              {{ task.author.get_full_name|default:task.author.username }}
+            </dd>
+
+            <dt class="col-sm-3">Исполнитель</dt>
+            <dd class="col-sm-9">
+              {% if task.executor %}
+                {{ task.executor.get_full_name|default:task.executor.username }}
+              {% else %}
+                <span class="text-muted">Не назначен</span>
+              {% endif %}
+            </dd>
+
+            <dt class="col-sm-3">Описание</dt>
+            <dd class="col-sm-9">
+              {% if task.description %}
+                <p class="mb-0">{{ task.description|linebreaksbr }}</p>
+              {% else %}
+                <span class="text-muted">Отсутствует</span>
+              {% endif %}
+            </dd>
+          </dl>
+          <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary" href="{% url 'tasks:update' task.pk %}">Изменить</a>
+            {% if request.user.pk == task.author_id %}
+              <a class="btn btn-danger" href="{% url 'tasks:delete' task.pk %}">Удалить</a>
+            {% endif %}
+            <a class="btn btn-link" href="{% url 'tasks:list' %}">Назад к списку</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView
+from django.db.models import ProtectedError
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, ListView, UpdateView
@@ -62,11 +63,18 @@ class UserDeleteView(UserPermissionMixin, DeleteView):
     template_name = "users/delete.html"
     success_url = reverse_lazy("users:list")
     success_message = "Пользователь успешно удален."
+    protected_message = "Нельзя удалить пользователя, потому что он связан с задачами."
 
-    def delete(self, request, *args, **kwargs):
-        response = super().delete(request, *args, **kwargs)
-        messages.success(request, self.success_message)
-        return response
+    def form_valid(self, form):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        try:
+            self.object.delete()
+        except ProtectedError:
+            messages.error(self.request, self.protected_message)
+            return HttpResponseRedirect(success_url)
+        messages.success(self.request, self.success_message)
+        return HttpResponseRedirect(success_url)
 
 
 class UserLoginView(LoginView):

@@ -20,4 +20,3 @@ build:
 
 test:
 	uv run python manage.py test
-	

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Задачи{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Задачи</h1>
+    <a class="btn btn-primary" href="{% url 'tasks:create' %}">Создать задачу</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-striped align-middle">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Имя</th>
+          <th scope="col">Статус</th>
+          <th scope="col">Автор</th>
+          <th scope="col">Исполнитель</th>
+          <th scope="col" class="text-end">Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+          <tr>
+            <th scope="row">{{ task.pk }}</th>
+            <td>
+              <a href="{% url 'tasks:detail' task.pk %}" class="link-primary text-decoration-none">
+                {{ task.name }}
+              </a>
+            </td>
+            <td>{{ task.status.name }}</td>
+            <td>{{ task.author.get_full_name|default:task.author.username }}</td>
+            <td>
+              {% if task.executor %}
+                {{ task.executor.get_full_name|default:task.executor.username }}
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td class="text-end">
+              <a class="btn btn-sm btn-outline-secondary" href="{% url 'tasks:update' task.pk %}">Изменить</a>
+              {% if request.user.pk == task.author_id %}
+                <a class="btn btn-sm btn-outline-danger ms-2" href="{% url 'tasks:delete' task.pk %}">Удалить</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center py-4">Задачи отсутствуют.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

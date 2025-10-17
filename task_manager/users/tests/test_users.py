@@ -2,6 +2,9 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
+from task_manager.statuses.models import Status
+from task_manager.tasks.models import Task
+
 
 class UserViewsTest(TestCase):
     def setUp(self):
@@ -89,6 +92,22 @@ class UserViewsTest(TestCase):
             password="StrongPass123!",
         )
         self.client.force_login(other)
+        response = self.client.post(
+            reverse("users:delete", args=[self.user.pk]),
+            follow=True,
+        )
+        self.assertRedirects(response, reverse("users:list"))
+        self.assertTrue(User.objects.filter(pk=self.user.pk).exists())
+
+    def test_user_delete_blocked_when_related_tasks(self):
+        status = Status.objects.create(name="Статус для теста")
+        Task.objects.create(
+            name="Связанная задача",
+            description="",
+            status=status,
+            author=self.user,
+        )
+        self.client.force_login(self.user)
         response = self.client.post(
             reverse("users:delete", args=[self.user.pk]),
             follow=True,

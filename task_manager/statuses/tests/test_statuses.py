@@ -5,6 +5,8 @@ from django.db.models import ProtectedError
 from django.test import TestCase
 from django.urls import reverse
 
+from task_manager.tasks.models import Task
+
 from ..models import Status
 
 
@@ -62,3 +64,19 @@ class StatusViewsTest(TestCase):
             )
         self.assertRedirects(response, reverse("statuses:list"))
         self.assertTrue(Status.objects.filter(pk=another_status.pk).exists())
+
+    def test_delete_status_with_related_tasks_forbidden(self):
+        self.client.force_login(self.user)
+        task = Task.objects.create(
+            name="Связанная задача",
+            description="",
+            status=self.status,
+            author=self.user,
+        )
+        response = self.client.post(
+            reverse("statuses:delete", args=[self.status.pk]),
+            follow=True,
+        )
+        self.assertRedirects(response, reverse("statuses:list"))
+        self.assertTrue(Status.objects.filter(pk=self.status.pk).exists())
+        self.assertTrue(Task.objects.filter(pk=task.pk).exists())
