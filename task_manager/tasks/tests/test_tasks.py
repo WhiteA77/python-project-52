@@ -23,7 +23,14 @@ class TaskViewsTest(TestCase):
             last_name="User",
             password=self.password,
         )
+        self.other_user = User.objects.create_user(
+            username="other",
+            first_name="Other",
+            last_name="User",
+            password=self.password,
+        )
         self.status = Status.objects.create(name="Новый")
+        self.status_in_progress = Status.objects.create(name="В работе")
         self.label = Label.objects.create(name="bug")
         self.other_label = Label.objects.create(name="feature")
         self.task = Task.objects.create(
@@ -34,6 +41,14 @@ class TaskViewsTest(TestCase):
             executor=self.executor,
         )
         self.task.labels.add(self.label)
+        self.other_task = Task.objects.create(
+            name="Другое дело",
+            description="Другое описание",
+            status=self.status_in_progress,
+            author=self.other_user,
+            executor=self.author,
+        )
+        self.other_task.labels.add(self.other_label)
 
     def test_list_requires_login(self):
         response = self.client.get(reverse("tasks:list"))
@@ -99,16 +114,62 @@ class TaskViewsTest(TestCase):
         self.assertFalse(Task.objects.filter(pk=self.task.pk).exists())
 
     def test_delete_task_not_author_forbidden(self):
-        other_user = User.objects.create_user(
-            username="other",
-            first_name="Other",
-            last_name="User",
-            password=self.password,
-        )
-        self.client.force_login(other_user)
+        self.client.force_login(self.other_user)
         response = self.client.post(
             reverse("tasks:delete", args=[self.task.pk]),
             follow=True,
         )
         self.assertRedirects(response, reverse("tasks:list"))
         self.assertTrue(Task.objects.filter(pk=self.task.pk).exists())
+
+    def test_filter_by_status(self):
+        self.client.force_login(self.author)
+        response = self.client.get(
+            reverse("tasks:list"),
+            {"status": self.status.pk},
+        )
+        self.assertQuerySetEqual(
+            response.context["tasks"],
+            [self.task.pk],
+            transform=lambda task: task.pk,
+            ordered=False,
+        )
+
+    def test_filter_by_executor(self):
+        self.client.force_login(self.author)
+        response = self.client.get(
+            reverse("tasks:list"),
+            {"executor": self.author.pk},
+        )
+        self.assertQuerySetEqual(
+            response.context["tasks"],
+            [self.other_task.pk],
+            transform=lambda task: task.pk,
+            ordered=False,
+        )
+
+    def test_filter_by_label(self):
+        self.client.force_login(self.author)
+        response = self.client.get(
+            reverse("tasks:list"),
+            {"labels": self.label.pk},
+        )
+        self.assertQuerySetEqual(
+            response.context["tasks"],
+            [self.task.pk],
+            transform=lambda task: task.pk,
+            ordered=False,
+        )
+
+    def test_filter_by_my_tasks(self):
+        self.client.force_login(self.other_user)
+        response = self.client.get(
+            reverse("tasks:list"),
+            {"my_tasks": "on"},
+        )
+        self.assertQuerySetEqual(
+            response.context["tasks"],
+            [self.other_task.pk],
+            transform=lambda task: task.pk,
+            ordered=False,
+        )

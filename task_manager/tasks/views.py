@@ -2,10 +2,12 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django_filters.views import FilterView
 
 from .forms import TaskForm
+from .filters import TaskFilter
 from .models import Task
 
 
@@ -32,17 +34,17 @@ class AuthorRequiredMixin(LoginRequiredMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
-class TaskListView(LoginRequiredMixin, ListView):
+class TaskListView(LoginRequiredMixin, FilterView):
     model = Task
     template_name = "tasks/index.html"
     context_object_name = "tasks"
+    filterset_class = TaskFilter
+    queryset = Task.objects.select_related("status", "author", "executor").prefetch_related("labels").order_by("pk")
 
-    def get_queryset(self):
-        return (
-            Task.objects.select_related("status", "author", "executor")
-            .prefetch_related("labels")
-            .order_by("pk")
-        )
+    def get_filterset_kwargs(self, filterset_class):
+        kwargs = super().get_filterset_kwargs(filterset_class)
+        kwargs["request"] = self.request
+        return kwargs
 
 
 class TaskDetailView(LoginRequiredMixin, DetailView):
