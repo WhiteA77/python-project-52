@@ -1,5 +1,7 @@
 from django import forms
 
+from task_manager.labels.models import Label
+
 from .models import Task
 
 
@@ -10,7 +12,13 @@ class TaskForm(forms.ModelForm):
         required=False,
         label="Описание",
     )
+    labels = forms.ModelMultipleChoiceField(
+        queryset=Label.objects.all(),
+        required=False,
+        label="Метки",
+        widget=forms.SelectMultiple(attrs={"class": "form-select"}),
+    )
 
     class Meta:
         model = Task
-        fields = ("name", "description", "status", "executor")
+        fields = ("name", "description", "status", "executor", "labels")

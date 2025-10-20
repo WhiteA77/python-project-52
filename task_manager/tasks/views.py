@@ -37,11 +37,19 @@ class TaskListView(LoginRequiredMixin, ListView):
     template_name = "tasks/index.html"
     context_object_name = "tasks"
 
+    def get_queryset(self):
+        return (
+            Task.objects.select_related("status", "author", "executor")
+            .prefetch_related("labels")
+            .order_by("pk")
+        )
+
 
 class TaskDetailView(LoginRequiredMixin, DetailView):
     model = Task
     template_name = "tasks/detail.html"
     context_object_name = "task"
+    queryset = Task.objects.select_related("status", "author", "executor").prefetch_related("labels")
 
 
 class TaskCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -62,6 +70,7 @@ class TaskUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     template_name = "tasks/form.html"
     success_url = reverse_lazy("tasks:list")
     success_message = "Задача успешно изменена."
+    queryset = Task.objects.select_related("status", "author", "executor").prefetch_related("labels")
 
 
 class TaskDeleteView(AuthorRequiredMixin, DeleteView):
@@ -69,6 +78,7 @@ class TaskDeleteView(AuthorRequiredMixin, DeleteView):
     template_name = "tasks/delete.html"
     success_url = reverse_lazy("tasks:list")
     success_message = "Задача успешно удалена."
+    queryset = Task.objects.select_related("status", "author", "executor").prefetch_related("labels")
 
     def delete(self, request, *args, **kwargs):
         response = super().delete(request, *args, **kwargs)

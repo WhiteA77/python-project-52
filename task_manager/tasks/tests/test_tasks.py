@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
+from task_manager.labels.models import Label
 from task_manager.statuses.models import Status
 
 from ..models import Task
@@ -23,6 +24,8 @@ class TaskViewsTest(TestCase):
             password=self.password,
         )
         self.status = Status.objects.create(name="Новый")
+        self.label = Label.objects.create(name="bug")
+        self.other_label = Label.objects.create(name="feature")
         self.task = Task.objects.create(
             name="Первое дело",
             description="Описание задачи",
@@ -30,6 +33,7 @@ class TaskViewsTest(TestCase):
             author=self.author,
             executor=self.executor,
         )
+        self.task.labels.add(self.label)
 
     def test_list_requires_login(self):
         response = self.client.get(reverse("tasks:list"))
@@ -40,6 +44,7 @@ class TaskViewsTest(TestCase):
         response = self.client.get(reverse("tasks:list"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.task.name)
+        self.assertContains(response, self.label.name)
 
     def test_detail_requires_login(self):
         response = self.client.get(reverse("tasks:detail", args=[self.task.pk]))
@@ -51,6 +56,7 @@ class TaskViewsTest(TestCase):
         response = self.client.get(reverse("tasks:detail", args=[self.task.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.task.name)
+        self.assertContains(response, self.label.name)
 
     def test_create_task(self):
         self.client.force_login(self.author)
@@ -59,11 +65,13 @@ class TaskViewsTest(TestCase):
             "description": "Тестовое описание",
             "status": self.status.pk,
             "executor": self.executor.pk,
+            "labels": [self.label.pk, self.other_label.pk],
         }
         response = self.client.post(reverse("tasks:create"), data=form_data)
         self.assertRedirects(response, reverse("tasks:list"))
         task = Task.objects.get(name="Новая задача")
         self.assertEqual(task.author, self.author)
+        self.assertEqual(task.labels.count(), 2)
 
     def test_update_task(self):
         self.client.force_login(self.author)
@@ -72,6 +80,7 @@ class TaskViewsTest(TestCase):
             "description": "Обновленное описание",
             "status": self.status.pk,
             "executor": self.executor.pk,
+            "labels": [self.other_label.pk],
         }
         response = self.client.post(
             reverse("tasks:update", args=[self.task.pk]),
@@ -81,6 +90,7 @@ class TaskViewsTest(TestCase):
         self.task.refresh_from_db()
         self.assertEqual(self.task.name, "Обновленное имя")
         self.assertEqual(self.task.description, "Обновленное описание")
+        self.assertListEqual(list(self.task.labels.values_list("pk", flat=True)), [self.other_label.pk])
 
     def test_delete_task_by_author(self):
         self.client.force_login(self.author)
