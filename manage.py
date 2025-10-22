@@ -18,19 +18,7 @@ def _prepare_environment() -> None:
     if venv_dir is None:
         return
     if Path(sys.prefix).resolve() != venv_dir.resolve():
-        env = os.environ.copy()
-        env["MANAGEPY_UV_REEXEC"] = "1"
         os.execvp("uv", ["uv", "run", "python", *sys.argv])
-
-    activate_path = (
-        venv_dir / ("Scripts" if os.name == "nt" else "bin") / "activate_this.py"
-    )
-    if activate_path.exists():
-        with open(activate_path, "rb") as file:
-            exec(
-                compile(file.read(), str(activate_path), "exec"),
-                {"__file__": str(activate_path)},
-            )
 
 
 def main():
