@@ -151,3 +151,20 @@ CSRF_TRUSTED_ORIGINS = list(
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "index"
 LOGOUT_REDIRECT_URL = "index"
+
+ROLLBAR_ACCESS_TOKEN = os.getenv("ROLLBAR_ACCESS_TOKEN")
+
+if ROLLBAR_ACCESS_TOKEN:
+    rollbar_environment = os.getenv(
+        "ROLLBAR_ENVIRONMENT",
+        "development" if DEBUG else "production",
+    )
+    ROLLBAR = {
+        "access_token": ROLLBAR_ACCESS_TOKEN,
+        "environment": rollbar_environment,
+        "code_version": os.getenv("ROLLBAR_CODE_VERSION", "1.0"),
+        "root": BASE_DIR,
+    }
+    MIDDLEWARE.append("rollbar.contrib.django.middleware.RollbarNotifierMiddleware")
+else:
+    ROLLBAR = None

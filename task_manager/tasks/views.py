@@ -10,7 +10,6 @@ from .forms import TaskForm
 from .filters import TaskFilter
 from .models import Task
 
-
 class SuccessMessageMixin:
     success_message = ""
 
