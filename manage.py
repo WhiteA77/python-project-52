@@ -5,29 +5,44 @@ import sys
 from pathlib import Path
 
 
-def _activate_virtualenv() -> None:
-    """Activate local virtual environment if present."""
+def _locate_venv() -> Path | None:
     base_dir = Path(__file__).resolve().parent
-    candidates = [
-        base_dir / ".venv",
-        base_dir.parent / ".venv",
-    ]
-    for venv_dir in candidates:
-        activate_script = venv_dir / "bin" / "activate_this.py"
-        if not activate_script.exists():
-            activate_script = venv_dir / "Scripts" / "activate_this.py"
-        if activate_script.exists():
-            with open(activate_script, "rb") as file:
-                exec(
-                    compile(file.read(), str(activate_script), "exec"),
-                    {"__file__": str(activate_script)},
-                )
-            break
+    for candidate in (base_dir / ".venv", base_dir.parent / ".venv"):
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def _ensure_venv_python(venv_dir: Path) -> None:
+    if os.name == "nt":
+        python_path = venv_dir / "Scripts" / "python.exe"
+        activate_path = venv_dir / "Scripts" / "activate_this.py"
+    else:
+        python_path = venv_dir / "bin" / "python"
+        activate_path = venv_dir / "bin" / "activate_this.py"
+
+    if python_path.exists():
+        current = Path(sys.executable).resolve()
+        if current != python_path.resolve():
+            os.execv(str(python_path), [str(python_path), *sys.argv])
+
+    if activate_path.exists():
+        with open(activate_path, "rb") as file:
+            exec(
+                compile(file.read(), str(activate_path), "exec"),
+                {"__file__": str(activate_path)},
+            )
+
+
+def _prepare_environment() -> None:
+    venv_dir = _locate_venv()
+    if venv_dir is not None:
+        _ensure_venv_python(venv_dir)
 
 
 def main():
     """Run administrative tasks."""
-    _activate_virtualenv()
+    _prepare_environment()
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'task_manager.settings')
     try:
         from django.core.management import execute_from_command_line
