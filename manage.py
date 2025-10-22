@@ -13,31 +13,24 @@ def _locate_venv() -> Path | None:
     return None
 
 
-def _ensure_venv_python(venv_dir: Path) -> None:
-    if os.name == "nt":
-        python_path = venv_dir / "Scripts" / "python.exe"
-        activate_path = venv_dir / "Scripts" / "activate_this.py"
-    else:
-        python_path = venv_dir / "bin" / "python"
-        activate_path = venv_dir / "bin" / "activate_this.py"
+def _prepare_environment() -> None:
+    venv_dir = _locate_venv()
+    if venv_dir is None:
+        return
+    if Path(sys.prefix).resolve() != venv_dir.resolve():
+        env = os.environ.copy()
+        env["MANAGEPY_UV_REEXEC"] = "1"
+        os.execvp("uv", ["uv", "run", "python", *sys.argv])
 
-    if python_path.exists():
-        current = Path(sys.executable).resolve()
-        if current != python_path.resolve():
-            os.execv(str(python_path), [str(python_path), *sys.argv])
-
+    activate_path = (
+        venv_dir / ("Scripts" if os.name == "nt" else "bin") / "activate_this.py"
+    )
     if activate_path.exists():
         with open(activate_path, "rb") as file:
             exec(
                 compile(file.read(), str(activate_path), "exec"),
                 {"__file__": str(activate_path)},
             )
-
-
-def _prepare_environment() -> None:
-    venv_dir = _locate_venv()
-    if venv_dir is not None:
-        _ensure_venv_python(venv_dir)
 
 
 def main():
