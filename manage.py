@@ -8,13 +8,21 @@ from pathlib import Path
 def _activate_virtualenv() -> None:
     """Activate local virtual environment if present."""
     base_dir = Path(__file__).resolve().parent
-    venv_dir = base_dir / ".venv"
-    activate_script = venv_dir / "bin" / "activate_this.py"
-    if not activate_script.exists():
-        activate_script = venv_dir / "Scripts" / "activate_this.py"
-    if activate_script.exists():
-        with open(activate_script, "rb") as file:
-            exec(compile(file.read(), str(activate_script), "exec"), {"__file__": str(activate_script)})
+    candidates = [
+        base_dir / ".venv",
+        base_dir.parent / ".venv",
+    ]
+    for venv_dir in candidates:
+        activate_script = venv_dir / "bin" / "activate_this.py"
+        if not activate_script.exists():
+            activate_script = venv_dir / "Scripts" / "activate_this.py"
+        if activate_script.exists():
+            with open(activate_script, "rb") as file:
+                exec(
+                    compile(file.read(), str(activate_script), "exec"),
+                    {"__file__": str(activate_script)},
+                )
+            break
 
 
 def main():
