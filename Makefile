@@ -1,4 +1,4 @@
-.PHONY: install migrate collectstatic start render-start build
+.PHONY: install migrate collectstatic start render-start build test setup start-server
 
 install:
 	uv sync
@@ -12,6 +12,9 @@ collectstatic:
 start:
 	uv run python manage.py runserver 0.0.0.0:8000
 
+start-server:
+	uv run python manage.py runserver 0.0.0.0:3000
+
 render-start:
 	gunicorn task_manager.wsgi
 
@@ -20,3 +23,5 @@ build:
 
 test:
 	uv run python manage.py test
+
+setup: install migrate
