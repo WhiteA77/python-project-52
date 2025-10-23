@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView
@@ -9,6 +8,7 @@ from django_filters.views import FilterView
 from .forms import TaskForm
 from .filters import TaskFilter
 from .models import Task
+from task_manager.mixins import LoginMessageRequiredMixin
 
 class SuccessMessageMixin:
     success_message = ""
@@ -20,7 +20,7 @@ class SuccessMessageMixin:
         return response
 
 
-class AuthorRequiredMixin(LoginRequiredMixin):
+class AuthorRequiredMixin(LoginMessageRequiredMixin):
     permission_message = "Удалять задачу может только её автор"
 
     def dispatch(self, request, *args, **kwargs):
@@ -33,7 +33,7 @@ class AuthorRequiredMixin(LoginRequiredMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
-class TaskListView(LoginRequiredMixin, FilterView):
+class TaskListView(LoginMessageRequiredMixin, FilterView):
     model = Task
     template_name = "tasks/index.html"
     context_object_name = "tasks"
@@ -46,14 +46,14 @@ class TaskListView(LoginRequiredMixin, FilterView):
         return kwargs
 
 
-class TaskDetailView(LoginRequiredMixin, DetailView):
+class TaskDetailView(LoginMessageRequiredMixin, DetailView):
     model = Task
     template_name = "tasks/detail.html"
     context_object_name = "task"
     queryset = Task.objects.select_related("status", "author", "executor").prefetch_related("labels")
 
 
-class TaskCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class TaskCreateView(LoginMessageRequiredMixin, SuccessMessageMixin, CreateView):
     model = Task
     form_class = TaskForm
     template_name = "tasks/form.html"
@@ -65,7 +65,7 @@ class TaskCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class TaskUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class TaskUpdateView(LoginMessageRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Task
     form_class = TaskForm
     template_name = "tasks/form.html"

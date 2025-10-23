@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, ListView
@@ -7,6 +6,7 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from .forms import LabelForm
 from .models import Label
+from task_manager.mixins import LoginMessageRequiredMixin
 
 
 class SuccessMessageMixin:
@@ -19,13 +19,13 @@ class SuccessMessageMixin:
         return response
 
 
-class LabelListView(LoginRequiredMixin, ListView):
+class LabelListView(LoginMessageRequiredMixin, ListView):
     model = Label
     template_name = "labels/index.html"
     context_object_name = "labels"
 
 
-class LabelCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class LabelCreateView(LoginMessageRequiredMixin, SuccessMessageMixin, CreateView):
     model = Label
     form_class = LabelForm
     template_name = "labels/form.html"
@@ -33,7 +33,7 @@ class LabelCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     success_message = "Метка успешно создана"
 
 
-class LabelUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class LabelUpdateView(LoginMessageRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Label
     form_class = LabelForm
     template_name = "labels/form.html"
@@ -41,7 +41,7 @@ class LabelUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     success_message = "Метка успешно изменена"
 
 
-class LabelDeleteView(LoginRequiredMixin, DeleteView):
+class LabelDeleteView(LoginMessageRequiredMixin, DeleteView):
     model = Label
     template_name = "labels/delete.html"
     success_url = reverse_lazy("labels:list")

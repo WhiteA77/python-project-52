@@ -13,7 +13,6 @@
         <tr>
           <th scope="col">ID</th>
           <th scope="col">Имя</th>
-          <th scope="col">Фамилия</th>
           <th scope="col">Имя пользователя</th>
           <th scope="col" class="text-end">Действия</th>
         </tr>
@@ -22,21 +21,16 @@
         {% for user in users %}
           <tr>
             <th scope="row">{{ user.pk }}</th>
-            <td>{{ user.first_name }}</td>
-            <td>{{ user.last_name }}</td>
+            <td>{{ user.first_name }} {{ user.last_name }}</td>
             <td>{{ user.username }}</td>
             <td class="text-end">
-              {% if request.user.is_authenticated and request.user.pk == user.pk %}
-                <a class="btn btn-sm btn-outline-secondary" href="{% url 'users:update' user.pk %}">Изменить</a>
-                <a class="btn btn-sm btn-outline-danger ms-2" href="{% url 'users:delete' user.pk %}">Удалить</a>
-              {% else %}
-                <span class="text-muted small">Недоступно</span>
-              {% endif %}
+              <a class="btn btn-sm btn-outline-secondary" href="{% url 'users:update' user.pk %}">Изменить</a>
+              <a class="btn btn-sm btn-outline-danger ms-2" href="{% url 'users:delete' user.pk %}">Удалить</a>
             </td>
           </tr>
         {% empty %}
           <tr>
-            <td colspan="5" class="text-center py-4">Пользователи отсутствуют.</td>
+            <td colspan="4" class="text-center py-4">Пользователи отсутствуют.</td>
           </tr>
         {% endfor %}
       </tbody>

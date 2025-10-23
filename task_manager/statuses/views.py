@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import ProtectedError
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -8,9 +7,10 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from .forms import StatusForm
 from .models import Status
+from task_manager.mixins import LoginMessageRequiredMixin
 
 
-class StatusListView(LoginRequiredMixin, ListView):
+class StatusListView(LoginMessageRequiredMixin, ListView):
     model = Status
     template_name = "statuses/index.html"
     context_object_name = "statuses"
@@ -26,7 +26,7 @@ class SuccessMessageMixin:
         return response
 
 
-class StatusCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class StatusCreateView(LoginMessageRequiredMixin, SuccessMessageMixin, CreateView):
     model = Status
     form_class = StatusForm
     template_name = "statuses/form.html"
@@ -34,7 +34,7 @@ class StatusCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     success_message = "Статус успешно создан"
 
 
-class StatusUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class StatusUpdateView(LoginMessageRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Status
     form_class = StatusForm
     template_name = "statuses/form.html"
@@ -42,7 +42,7 @@ class StatusUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     success_message = "Статус успешно изменен"
 
 
-class StatusDeleteView(LoginRequiredMixin, DeleteView):
+class StatusDeleteView(LoginMessageRequiredMixin, DeleteView):
     model = Status
     template_name = "statuses/delete.html"
     success_url = reverse_lazy("statuses:list")

@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView
 from django.db.models import ProtectedError
@@ -9,6 +8,7 @@ from django.views.generic import DeleteView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
 from .forms import UserLoginForm, UserRegisterForm, UserUpdateForm
+from task_manager.mixins import LoginMessageRequiredMixin
 
 
 class UserListView(ListView):
@@ -28,7 +28,7 @@ class SuccessRedirectMixin:
         return response
 
 
-class UserPermissionMixin(LoginRequiredMixin):
+class UserPermissionMixin(LoginMessageRequiredMixin):
     permission_message = "У вас нет прав для изменения другого пользователя."
 
     def dispatch(self, request, *args, **kwargs):
