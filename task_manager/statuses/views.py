@@ -31,7 +31,7 @@ class StatusCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     form_class = StatusForm
     template_name = "statuses/form.html"
     success_url = reverse_lazy("statuses:list")
-    success_message = "Статус успешно создан."
+    success_message = "Статус успешно создан"
 
 
 class StatusUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -39,15 +39,15 @@ class StatusUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = StatusForm
     template_name = "statuses/form.html"
     success_url = reverse_lazy("statuses:list")
-    success_message = "Статус успешно изменен."
+    success_message = "Статус успешно изменен"
 
 
 class StatusDeleteView(LoginRequiredMixin, DeleteView):
     model = Status
     template_name = "statuses/delete.html"
     success_url = reverse_lazy("statuses:list")
-    success_message = "Статус успешно удален."
-    protected_message = "Нельзя удалить статус, потому что он используется."
+    success_message = "Статус успешно удален"
+    protected_message = "Невозможно удалить статус, потому что он используется"
 
     def form_valid(self, form):
         self.object = self.get_object()

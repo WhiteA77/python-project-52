@@ -30,7 +30,7 @@ class LabelCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     form_class = LabelForm
     template_name = "labels/form.html"
     success_url = reverse_lazy("labels:list")
-    success_message = "Метка успешно создана."
+    success_message = "Метка успешно создана"
 
 
 class LabelUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -38,15 +38,15 @@ class LabelUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = LabelForm
     template_name = "labels/form.html"
     success_url = reverse_lazy("labels:list")
-    success_message = "Метка успешно изменена."
+    success_message = "Метка успешно изменена"
 
 
 class LabelDeleteView(LoginRequiredMixin, DeleteView):
     model = Label
     template_name = "labels/delete.html"
     success_url = reverse_lazy("labels:list")
-    success_message = "Метка успешно удалена."
-    protected_message = "Нельзя удалить метку, потому что она использована в задачах."
+    success_message = "Метка успешно удалена"
+    protected_message = "Невозможно удалить метку, потому что она используется"
 
     def form_valid(self, form):
         self.object = self.get_object()

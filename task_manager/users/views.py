@@ -55,7 +55,7 @@ class UserUpdateView(UserPermissionMixin, SuccessRedirectMixin, UpdateView):
     form_class = UserUpdateForm
     template_name = "users/form.html"
     success_url = reverse_lazy("users:list")
-    success_message = "Пользователь успешно изменен."
+    success_message = "Пользователь успешно изменен"
 
 
 class UserDeleteView(UserPermissionMixin, DeleteView):
@@ -83,7 +83,7 @@ class UserLoginView(LoginView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        messages.success(self.request, "Вы вошли в систему.")
+        messages.success(self.request, "Вы залогинены.")
         return response
 
     def get_success_url(self):
@@ -95,5 +95,5 @@ class UserLogoutView(LogoutView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            messages.info(request, "Вы вышли из системы.")
+            messages.info(request, "Вы разлогинены.")
         return super().dispatch(request, *args, **kwargs)
