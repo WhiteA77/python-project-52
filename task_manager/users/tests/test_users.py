@@ -80,7 +80,9 @@ class UserViewsTest(TestCase):
 
     def test_user_delete_self(self):
         self.client.force_login(self.user)
-        response = self.client.post(reverse("users:delete", args=[self.user.pk]))
+        response = self.client.post(
+            reverse("users:delete", args=[self.user.pk])
+        )
         self.assertRedirects(response, reverse("users:list"))
         self.assertFalse(User.objects.filter(pk=self.user.pk).exists())
 
