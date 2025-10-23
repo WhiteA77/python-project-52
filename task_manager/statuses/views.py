@@ -26,7 +26,11 @@ class SuccessMessageMixin:
         return response
 
 
-class StatusCreateView(LoginMessageRequiredMixin, SuccessMessageMixin, CreateView):
+class StatusCreateView(
+    LoginMessageRequiredMixin,
+    SuccessMessageMixin,
+    CreateView,
+):
     model = Status
     form_class = StatusForm
     template_name = "statuses/form.html"
@@ -34,7 +38,11 @@ class StatusCreateView(LoginMessageRequiredMixin, SuccessMessageMixin, CreateVie
     success_message = "Статус успешно создан"
 
 
-class StatusUpdateView(LoginMessageRequiredMixin, SuccessMessageMixin, UpdateView):
+class StatusUpdateView(
+    LoginMessageRequiredMixin,
+    SuccessMessageMixin,
+    UpdateView,
+):
     model = Status
     form_class = StatusForm
     template_name = "statuses/form.html"

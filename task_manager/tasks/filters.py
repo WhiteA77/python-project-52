@@ -5,8 +5,8 @@ import django_filters
 from task_manager.labels.models import Label
 from task_manager.statuses.models import Status
 
-from .models import Task
 from .forms import FullNameModelChoiceField
+from .models import Task
 
 User = get_user_model()
 
@@ -42,7 +42,12 @@ class TaskFilter(django_filters.FilterSet):
         fields = ("status", "executor", "labels")
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
-        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+        super().__init__(
+            data=data,
+            queryset=queryset,
+            request=request,
+            prefix=prefix,
+        )
         self.request = request
 
     def filter_my_tasks(self, queryset, name, value):

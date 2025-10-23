@@ -25,7 +25,11 @@ class LabelListView(LoginMessageRequiredMixin, ListView):
     context_object_name = "labels"
 
 
-class LabelCreateView(LoginMessageRequiredMixin, SuccessMessageMixin, CreateView):
+class LabelCreateView(
+    LoginMessageRequiredMixin,
+    SuccessMessageMixin,
+    CreateView,
+):
     model = Label
     form_class = LabelForm
     template_name = "labels/form.html"
@@ -33,7 +37,11 @@ class LabelCreateView(LoginMessageRequiredMixin, SuccessMessageMixin, CreateView
     success_message = "Метка успешно создана"
 
 
-class LabelUpdateView(LoginMessageRequiredMixin, SuccessMessageMixin, UpdateView):
+class LabelUpdateView(
+    LoginMessageRequiredMixin,
+    SuccessMessageMixin,
+    UpdateView,
+):
     model = Label
     form_class = LabelForm
     template_name = "labels/form.html"

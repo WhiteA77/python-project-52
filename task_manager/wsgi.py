@@ -9,17 +9,16 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/
 
 import os
 
+from django.conf import settings
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'task_manager.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "task_manager.settings")
 
 application = get_wsgi_application()
 
-from django.conf import settings  # noqa: E402
-
 if getattr(settings, "ROLLBAR", None):
     try:
-        import rollbar  # noqa: WPS433
+        import rollbar
     except ImportError:
         rollbar = None
     else:

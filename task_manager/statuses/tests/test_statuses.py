@@ -23,7 +23,8 @@ class StatusViewsTest(TestCase):
 
     def test_list_requires_login(self):
         response = self.client.get(reverse("statuses:list"))
-        self.assertRedirects(response, f"{reverse('login')}?next={reverse('statuses:list')}")
+        redirect_url = reverse('login') + '?next=' + reverse('statuses:list')
+        self.assertRedirects(response, redirect_url)
 
     def test_create_status(self):
         self.client.force_login(self.user)
@@ -46,7 +47,9 @@ class StatusViewsTest(TestCase):
 
     def test_delete_status(self):
         self.client.force_login(self.user)
-        response = self.client.post(reverse("statuses:delete", args=[self.status.pk]))
+        response = self.client.post(
+            reverse("statuses:delete", args=[self.status.pk])
+        )
         self.assertRedirects(response, reverse("statuses:list"))
         self.assertFalse(Status.objects.filter(pk=self.status.pk).exists())
 

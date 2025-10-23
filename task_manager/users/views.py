@@ -63,7 +63,9 @@ class UserDeleteView(UserPermissionMixin, DeleteView):
     template_name = "users/delete.html"
     success_url = reverse_lazy("users:list")
     success_message = "Пользователь успешно удален"
-    protected_message = "Невозможно удалить пользователя, потому что он используется"
+    protected_message = (
+        "Невозможно удалить пользователя, потому что он используется"
+    )
 
     def form_valid(self, form):
         self.object = self.get_object()

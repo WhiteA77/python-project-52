@@ -52,7 +52,8 @@ class TaskViewsTest(TestCase):
 
     def test_list_requires_login(self):
         response = self.client.get(reverse("tasks:list"))
-        self.assertRedirects(response, f"{reverse('login')}?next={reverse('tasks:list')}")
+        redirect_url = reverse('login') + '?next=' + reverse('tasks:list')
+        self.assertRedirects(response, redirect_url)
 
     def test_list_authenticated(self):
         self.client.force_login(self.author)
@@ -63,8 +64,12 @@ class TaskViewsTest(TestCase):
 
     def test_detail_requires_login(self):
         response = self.client.get(reverse("tasks:detail", args=[self.task.pk]))
-        expected = f"{reverse('login')}?next={reverse('tasks:detail', args=[self.task.pk])}"
-        self.assertRedirects(response, expected)
+        redirect_url = (
+            reverse('login')
+            + '?next='
+            + reverse('tasks:detail', args=[self.task.pk])
+        )
+        self.assertRedirects(response, redirect_url)
 
     def test_detail_authenticated(self):
         self.client.force_login(self.author)
@@ -105,11 +110,14 @@ class TaskViewsTest(TestCase):
         self.task.refresh_from_db()
         self.assertEqual(self.task.name, "Обновленное имя")
         self.assertEqual(self.task.description, "Обновленное описание")
-        self.assertListEqual(list(self.task.labels.values_list("pk", flat=True)), [self.other_label.pk])
+        labels = list(self.task.labels.values_list("pk", flat=True))
+        self.assertListEqual(labels, [self.other_label.pk])
 
     def test_delete_task_by_author(self):
         self.client.force_login(self.author)
-        response = self.client.post(reverse("tasks:delete", args=[self.task.pk]))
+        response = self.client.post(
+            reverse("tasks:delete", args=[self.task.pk])
+        )
         self.assertRedirects(response, reverse("tasks:list"))
         self.assertFalse(Task.objects.filter(pk=self.task.pk).exists())
 

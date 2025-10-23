@@ -60,7 +60,11 @@ class UserUpdateForm(forms.ModelForm):
 
 
 class UserLoginForm(AuthenticationForm):
-    username = forms.CharField(max_length=150, required=True, label="Имя пользователя")
+    username = forms.CharField(
+        max_length=150,
+        required=True,
+        label="Имя пользователя",
+    )
     password = forms.CharField(
         strip=False,
         widget=forms.PasswordInput,

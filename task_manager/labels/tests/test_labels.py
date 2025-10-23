@@ -21,7 +21,8 @@ class LabelViewsTest(TestCase):
 
     def test_list_requires_login(self):
         response = self.client.get(reverse("labels:list"))
-        self.assertRedirects(response, f"{reverse('login')}?next={reverse('labels:list')}")
+        redirect_url = reverse('login') + '?next=' + reverse('labels:list')
+        self.assertRedirects(response, redirect_url)
 
     def test_list_authenticated(self):
         self.client.force_login(self.user)
@@ -51,7 +52,9 @@ class LabelViewsTest(TestCase):
     def test_delete_label(self):
         self.client.force_login(self.user)
         label = Label.objects.create(name="temp")
-        response = self.client.post(reverse("labels:delete", args=[label.pk]))
+        response = self.client.post(
+            reverse("labels:delete", args=[label.pk])
+        )
         self.assertRedirects(response, reverse("labels:list"))
         self.assertFalse(Label.objects.filter(pk=label.pk).exists())
 
