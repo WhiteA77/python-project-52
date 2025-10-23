@@ -21,7 +21,7 @@ class SuccessMessageMixin:
 
 
 class AuthorRequiredMixin(LoginMessageRequiredMixin):
-    permission_message = "Удалять задачу может только её автор"
+    permission_message = "Задачу может удалить только ее автор"
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
