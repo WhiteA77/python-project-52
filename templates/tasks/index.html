@@ -74,9 +74,7 @@
             </td>
             <td class="text-end">
               <a class="btn btn-sm btn-outline-secondary" href="{% url 'tasks:update' task.pk %}">Изменить</a>
-              {% if request.user.pk == task.author_id %}
-                <a class="btn btn-sm btn-outline-danger ms-2" href="{% url 'tasks:delete' task.pk %}">Удалить</a>
-              {% endif %}
+              <a class="btn btn-sm btn-outline-danger ms-2" href="{% url 'tasks:delete' task.pk %}">Удалить</a>
             </td>
           </tr>
         {% empty %}
