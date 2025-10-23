@@ -1,0 +1,40 @@
+name: tests-with-coverage
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v1
+
+      - name: Sync dependencies
+        run: uv sync
+
+      - name: Install coverage
+        run: uv pip install coverage
+
+      - name: Run tests with coverage
+        run: |
+          uv run coverage run --source=task_manager manage.py test
+          uv run coverage xml
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=WhiteA77_python-project-52
+            -Dsonar.organization=whitea77
+            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.sources=.
