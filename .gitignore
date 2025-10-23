@@ -10,3 +10,5 @@ coverage.xml
 *.cast
 *.swp
 .env
+db.sqlite3
+staticfiles/
