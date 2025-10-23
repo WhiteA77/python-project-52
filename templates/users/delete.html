@@ -9,12 +9,12 @@
         <div class="card-body">
           <h1 class="h4 mb-3 text-center">Удаление пользователя</h1>
           <p class="mb-4 text-center">
-            Вы уверены, что хотите удалить пользователя <strong>{{ object.username }}</strong>?
+            Вы уверены, что хотите удалить <strong>{{ object.username }}</strong>?
           </p>
           <form method="post" class="d-flex justify-content-center gap-3">
             {% csrf_token %}
             <a class="btn btn-outline-secondary" href="{% url 'users:list' %}">Отмена</a>
-            <button class="btn btn-danger" type="submit">Удалить</button>
+            <button class="btn btn-danger" type="submit">Да, Удалить</button>
           </form>
         </div>
       </div>
