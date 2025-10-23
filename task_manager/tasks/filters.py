@@ -6,8 +6,13 @@ from task_manager.labels.models import Label
 from task_manager.statuses.models import Status
 
 from .models import Task
+from .forms import FullNameModelChoiceField
 
 User = get_user_model()
+
+
+class FullNameModelChoiceFilter(django_filters.ModelChoiceFilter):
+    field_class = FullNameModelChoiceField
 
 
 class TaskFilter(django_filters.FilterSet):
@@ -16,7 +21,7 @@ class TaskFilter(django_filters.FilterSet):
         queryset=Status.objects.all(),
         empty_label="---------",
     )
-    executor = django_filters.ModelChoiceFilter(
+    executor = FullNameModelChoiceFilter(
         label="Исполнитель",
         queryset=User.objects.all(),
         empty_label="---------",
