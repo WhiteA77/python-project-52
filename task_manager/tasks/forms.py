@@ -1,13 +1,13 @@
 from django import forms
+from django.contrib.auth import get_user_model
 
 from task_manager.labels.models import Label
 from task_manager.statuses.models import Status
-from django.contrib.auth import get_user_model
 
 from .models import Task
 
 
-class ExecutorModelChoiceField(forms.ModelChoiceField):
+class FullNameModelChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         full_name = obj.get_full_name()
         return full_name if full_name else obj.username
@@ -20,8 +20,12 @@ class TaskForm(forms.ModelForm):
         required=False,
         label="Описание",
     )
-    status = forms.ModelChoiceField(queryset=Status.objects.all(), label="Статус")
-    executor = ExecutorModelChoiceField(
+    status = forms.ModelChoiceField(
+        queryset=Status.objects.all(),
+        label="Статус",
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    executor = FullNameModelChoiceField(
         queryset=get_user_model().objects.all(),
         required=False,
         label="Исполнитель",
