@@ -47,7 +47,7 @@ class UserCreateView(SuccessRedirectMixin, CreateView):
     form_class = UserRegisterForm
     template_name = "users/form.html"
     success_url = reverse_lazy("login")
-    success_message = "Пользователь успешно зарегистрирован."
+    success_message = "Пользователь успешно зарегистрирован"
 
 
 class UserUpdateView(UserPermissionMixin, SuccessRedirectMixin, UpdateView):
@@ -62,8 +62,8 @@ class UserDeleteView(UserPermissionMixin, DeleteView):
     model = User
     template_name = "users/delete.html"
     success_url = reverse_lazy("users:list")
-    success_message = "Пользователь успешно удален."
-    protected_message = "Нельзя удалить пользователя, потому что он связан с задачами."
+    success_message = "Пользователь успешно удален"
+    protected_message = "Невозможно удалить пользователя, потому что он используется"
 
     def form_valid(self, form):
         self.object = self.get_object()
@@ -83,7 +83,7 @@ class UserLoginView(LoginView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        messages.success(self.request, "Вы залогинены.")
+        messages.success(self.request, "Вы залогинены")
         return response
 
     def get_success_url(self):
@@ -95,5 +95,5 @@ class UserLogoutView(LogoutView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            messages.info(request, "Вы разлогинены.")
+            messages.info(request, "Вы разлогинены")
         return super().dispatch(request, *args, **kwargs)
