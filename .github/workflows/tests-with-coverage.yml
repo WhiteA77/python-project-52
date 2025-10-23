@@ -16,13 +16,16 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
 
       - name: Set up uv
         uses: astral-sh/setup-uv@v1
 
       - name: Sync dependencies
-        run: uv sync --python 3.12
+        run: uv sync --python 3.13
+
+      - name: Display Python version
+        run: uv run python --version
 
       - name: Install coverage
         run: uv pip install coverage
