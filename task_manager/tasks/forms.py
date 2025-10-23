@@ -7,6 +7,12 @@ from django.contrib.auth import get_user_model
 from .models import Task
 
 
+class ExecutorModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        full_name = obj.get_full_name()
+        return full_name if full_name else obj.username
+
+
 class TaskForm(forms.ModelForm):
     name = forms.CharField(max_length=150, required=True, label="Имя")
     description = forms.CharField(
@@ -15,7 +21,7 @@ class TaskForm(forms.ModelForm):
         label="Описание",
     )
     status = forms.ModelChoiceField(queryset=Status.objects.all(), label="Статус")
-    executor = forms.ModelChoiceField(
+    executor = ExecutorModelChoiceField(
         queryset=get_user_model().objects.all(),
         required=False,
         label="Исполнитель",
